@@ -1,0 +1,46 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Gun : BaseBehavior
+{
+
+    [SerializeField]
+    [Tooltip("模板对象")]
+    private GameObject m_bulletTemplate;
+    [System.NonSerialized]
+    [Tooltip("组件对象池")]
+    private PoolComponent m_compPool;
+    [SerializeField]
+    [Tooltip("产生间隔")]
+    private float m_fireRate = 0.5f;
+    [System.NonSerialized]
+    [Tooltip("产生计数")]
+    private float m_fireTick;
+    protected override void OnInitFirst()
+    {
+        m_compPool = Singletons.Get<PoolComponent>("pool_comps");
+        m_compPool.getList<Bullet>().setTemplate(m_bulletTemplate);
+    }
+
+    protected override void OnInitSecond()
+    {
+
+    }
+
+    protected override void OnUpdate()
+    {
+        m_fireTick -= Time.deltaTime;
+        if (m_fireTick < 0)
+        {
+            m_fireTick += m_fireRate;
+            fire();
+        }
+    }
+    protected void fire()
+    {
+        Bullet bullet = m_compPool.GetObject<Bullet>();
+        bullet.m_transform.position = m_transform.position;
+        bullet.m_transform.rotation = m_transform.rotation;
+    }
+}
